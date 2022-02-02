@@ -51,7 +51,7 @@ resource "azurerm_virtual_machine_scale_set" "guru" {
 
    ip_configuration {
      name                                   = "IPConfiguration"
-     subnet_id                              = azurerm_subnet.guru.id
+     subnet_id                              = azurerm_subnet.guru-sub.id
      load_balancer_backend_address_pool_ids = [azurerm_lb_backend_address_pool.guru.id]
      primary = true
    }
