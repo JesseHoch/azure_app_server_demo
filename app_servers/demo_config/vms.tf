@@ -36,7 +36,7 @@ resource "azurerm_virtual_machine_scale_set" "guru" {
 
  os_profile {
    computer_name_prefix = "vmlab"
-   admin_username       = var.admin_user
+   admin_username       = var.admin_username
    admin_password       = var.admin_password
    custom_data          = file("web.conf")
  }
