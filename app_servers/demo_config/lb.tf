@@ -6,14 +6,13 @@ resource "azurerm_lb" "guru" {
 
   frontend_ip_configuration {
     name                 = "publicIPAddress"
-    public_ip_address_id = azurerm_public_ip.guru.id
+    public_ip_address_id = azurerm_public_ip.guru-pubip.id
   }
   tags = var.tags
 }
 
 # Creates the backend address pool for our load balancer
 resource "azurerm_lb_backend_address_pool" "guru" {
-  resource_group_name = azurerm_resource_group.guru.name
   loadbalancer_id     = azurerm_lb.guru.id
   name                = "BackEndAddressPool"
 }
