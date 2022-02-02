@@ -34,6 +34,7 @@ resource "azurerm_lb_rule" "guru" {
    frontend_port                  = var.application_port
    backend_port                   = var.application_port
    backend_address_pool_id        = azurerm_lb_backend_address_pool.guru.id
-   frontend_ip_configuration_name = "PublicIPAddress"
+   frontend_ip_configuration_name = azurerm_lb.guru.frontend_ip_configuration[0].name
+   #frontend_ip_configuration_name = "PublicIPAddress"
    probe_id                       = azurerm_lb_probe.guru.id
 }
