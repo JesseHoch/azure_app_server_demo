@@ -25,6 +25,12 @@ output "zones" {
 }
 */
 
+variable "azurerm_virtual_machine_scale_set" {
+ description = "The name of the virtual network in which the resources will be created"
+ default     = "GuruVMScaleSet"
+ type = string
+}
+  
 variable "availability_zone_names" {
  description = "The name of the virtual network in which the resources will be created"
  default     = ["<location>"]
