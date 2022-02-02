@@ -1,5 +1,5 @@
 # Sets the variables for our configuration
-variable "rg_location" {
+variable "location" {
   description = "Value of the Resource Group Name"
   type        = string
   default     = "<location>"
