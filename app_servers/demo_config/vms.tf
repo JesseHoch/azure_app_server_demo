@@ -1,70 +1,148 @@
-resource "azurerm_managed_disk" "guru" {
-  count                = 2
-  name                 = "datadisk_existing_${count.index}"
-  location             = azurerm_resource_group.guru.location
-  resource_group_name  = azurerm_resource_group.guru.name
-  storage_account_type = "Standard_LRS"
-  create_option        = "Empty"
-  disk_size_gb         = "1023"
+# Creates the Virtual Machine scale set to create our VMs
+resource "azurerm_virtual_machine_scale_set" "guru" {
+ name                = var.azurerm_virtual_machine_scale_set
+ location            = azurerm_resource_group.guru.location
+ resource_group_name = azurerm_resource_group.guru.name
+ upgrade_policy_mode = "Manual"
+
+ zones = local.zones
+
+ sku {
+   name     = "Standard_DS1_v2"
+   tier     = "Standard"
+   capacity = 2
+ }
+
+ storage_profile_image_reference {
+   publisher = "Canonical"
+   offer     = "UbuntuServer"
+   sku       = "16.04-LTS"
+   version   = "latest"
+ }
+
+ storage_profile_os_disk {
+   name              = ""
+   caching           = "ReadWrite"
+   create_option     = "FromImage"
+   managed_disk_type = "Standard_LRS"
+ }
+
+ storage_profile_data_disk {
+   lun          = 0
+   caching        = "ReadWrite"
+   create_option  = "Empty"
+   disk_size_gb   = 10
+ }
+
+ os_profile {
+   computer_name_prefix = "vmlab"
+   admin_username       = var.admin_user
+   admin_password       = var.admin_password
+   custom_data          = file("web.conf")
+ }
+
+ os_profile_linux_config {
+   disable_password_authentication = false
+ }
+
+ network_profile {
+   name    = "gurunetworkprofile"
+   primary = true
+
+   ip_configuration {
+     name                                   = "IPConfiguration"
+     subnet_id                              = azurerm_subnet.guru.id
+     load_balancer_backend_address_pool_ids = [azurerm_lb_backend_address_pool.guru.id]
+     primary = true
+   }
+ }
+
+ tags = var.tags
+
 }
 
-resource "azurerm_availability_set" "avset" {
-  name                         = "avset"
-  location                     = azurerm_resource_group.guru.location
-  resource_group_name          = azurerm_resource_group.guru.name
-  platform_fault_domain_count  = 2
-  platform_update_domain_count = 2
-  managed                      = true
+/*
+resource "azurerm_virtual_machine_scale_set_extension" "example" {
+  name                         = "example"
+  virtual_machine_scale_set_id =  azurerm_virtual_machine_scale_set.vmss.id
+  publisher                    = "Microsoft.Azure.Extensions"
+  type                         = "CustomScript"
+  type_handler_version         = "2.0"
+  settings = jsonencode({
+    "commandToExecute" = "echo Hello World $HOSTNAME "
+  })
 }
+*/
 
-resource "azurerm_virtual_machine" "guru" {
-  count                 = 2
-  name                  = "AZ-VM-00-${count.index}"
-  resource_group_name   = azurerm_resource_group.guru.name
-  location              = azurerm_resource_group.guru.location
-  vm_size               = "Standard_DS1_v2"
-  availability_set_id   = azurerm_availability_set.avset.id
-  network_interface_ids = [element(azurerm_network_interface.guru.*.id, count.index)]
-  storage_image_reference {
-    publisher = "Canonical"
-    offer     = "UbuntuServer"
-    sku       = "16.04-LTS"
-    version   = "latest"
-  }
-  storage_os_disk {
-    name              = "gurudisk-${count.index}"
-    caching           = "ReadWrite"
-    create_option     = "FromImage"
-    managed_disk_type = "Standard_LRS"
+
+# Creates the autoscale settings for our VMs
+resource "azurerm_monitor_autoscale_setting" "guru" {
+  name                = "AutoscaleSetting"
+  resource_group_name = azurerm_resource_group.guru.name
+  location            = azurerm_resource_group.guru.location
+  target_resource_id  = azurerm_virtual_machine_scale_set.guru.id
+
+  profile {
+    name = "defaultProfile"
+
+    capacity {
+      default = 2
+      minimum = 2
+      maximum = 10
+    }
+
+    rule {
+      metric_trigger {
+        metric_name        = "Percentage CPU"
+        metric_resource_id = azurerm_virtual_machine_scale_set.guru.id
+        time_grain         = "PT1M"
+        statistic          = "Average"
+        time_window        = "PT5M"
+        time_aggregation   = "Average"
+        operator           = "GreaterThan"
+        threshold          = 75
+        metric_namespace   = "microsoft.compute/virtualmachinescalesets"
+        dimensions {
+          name     = "AppName"
+          operator = "Equals"
+          values   = ["App1"]
+        }
+      }
+
+      scale_action {
+        direction = "Increase"
+        type      = "ChangeCount"
+        value     = "1"
+        cooldown  = "PT1M"
+      }
+    }
+
+    rule {
+      metric_trigger {
+        metric_name        = "Percentage CPU"
+        metric_resource_id = azurerm_virtual_machine_scale_set.guru.id
+        time_grain         = "PT1M"
+        statistic          = "Average"
+        time_window        = "PT5M"
+        time_aggregation   = "Average"
+        operator           = "LessThan"
+        threshold          = 25
+      }
+
+      scale_action {
+        direction = "Decrease"
+        type      = "ChangeCount"
+        value     = "1"
+        cooldown  = "PT1M"
+      }
+    }
   }
 
-  storage_data_disk {
-    name              = "datadisk_new_${count.index}"
-    managed_disk_type = "Standard_LRS"
-    create_option     = "Empty"
-    lun               = 0
-    disk_size_gb      = "1023"
-  }
-
-  storage_data_disk {
-    name            = element(azurerm_managed_disk.guru.*.name, count.index)
-    managed_disk_id = element(azurerm_managed_disk.guru.*.id, count.index)
-    create_option   = "Attach"
-    lun             = 1
-    disk_size_gb    = element(azurerm_managed_disk.guru.*.disk_size_gb, count.index)
-  }
-
-  os_profile {
-    computer_name  = "guru-${count.index}"
-    admin_username = var.admin_username
-    admin_password = var.admin_password
-  }
-
-  os_profile_linux_config {
-    disable_password_authentication = false
-  }
-
-  tags = {
-    environment = "staging"
+  notification {
+    email {
+      send_to_subscription_administrator    = true
+      send_to_subscription_co_administrator = true
+      custom_emails                         = ["admin@acloud.guru"]
+    }
   }
 }

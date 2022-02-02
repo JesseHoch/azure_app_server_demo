@@ -1,13 +1,39 @@
-variable "rg_name" {
+# Sets the variables for our configuration
+variable "rg_location" {
   description = "Value of the Resource Group Name"
   type        = string
-  default     = "1-c1578a37-playground-sandbox"
+  default     = "<location>"
 }
 
-variable "st_account_name" {
-  description = "Value of the Storage Account Name"
-  type        = string
-  default     = "tfstates2hcr"
+variable "tags" {
+ description = "A map of the tags to use for the resources that are deployed"
+ type        = map(string)
+
+ default = {
+   environment = "demo"
+ }
+}
+
+locals {
+  regions_with_availability_zones = ["<location>"] #["centralus","eastus2","eastus","westus"]
+  zones = contains(local.regions_with_availability_zones, var.location) ? list("1","2","3") : null
+}
+
+/*
+output "zones" {
+  value = local.zones
+}
+*/
+
+variable "availability_zone_names" {
+ description = "The name of the virtual network in which the resources will be created"
+ default     = ["<location>"]
+ type    = list(string)
+}
+
+variable "application_port" {
+   description = "The port that you want to expose to the external load balancer"
+   default     = 80
 }
 
 variable "admin_username" {
