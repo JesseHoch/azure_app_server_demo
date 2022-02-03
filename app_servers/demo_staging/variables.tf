@@ -19,12 +19,6 @@ locals {
   zones = contains(local.regions_with_availability_zones, var.location) ? list("1","2","3") : null
 }
 
-/*
-output "zones" {
-  value = local.zones
-}
-*/
-
 variable "azurerm_virtual_machine_scale_set" {
  description = "The name of the virtual network in which the resources will be created"
  default     = "GuruVMScaleSet"
