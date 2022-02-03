@@ -26,7 +26,7 @@ resource "azurerm_resource_group" "guru" {
 #resource "azurerm_subnet" "guru-sub" {
 #  name                 = "guru-subnet"
 #  resource_group_name  = azurerm_resource_group.guru.name
-#  virtual_network_name = azurerm_virtual_network.guru.name
+#  virtual_network_name = azurerm_virtual_network.guru-vn.name
 #  address_prefixes     = ["10.0.2.0/24"]
 #}
 
