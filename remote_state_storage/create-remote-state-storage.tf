@@ -20,7 +20,7 @@ resource "random_string" "resource_code" {
   upper   = false
 }
 
-# Imported Resource Group
+# Import Resource Group if using ACG's Azure Sandbox
 resource "azurerm_resource_group" "guru" {
   #name     = "<RESOURCE_GROUP>"
   #location = "<LOCATION>"
