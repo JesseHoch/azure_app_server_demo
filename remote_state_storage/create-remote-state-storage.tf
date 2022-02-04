@@ -24,7 +24,9 @@ resource "random_string" "resource_code" {
 resource "azurerm_resource_group" "guru" {
   #name     = "<RESOURCE_GROUP>"
   #location = "<LOCATION>"
-  #tags     = "demo"
+  #tags     = tags     = {
+  #  environment = "demo"
+  #}
 }
 
 # Creates the Azure Storage Account
