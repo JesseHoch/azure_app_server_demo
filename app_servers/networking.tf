@@ -2,7 +2,9 @@
 resource "azurerm_resource_group" "guru" {
   #name     = var.rg_name
   #location = var.location
-  #tags     = var.tags
+  #tags     = {
+  #  environment = var.tags
+  #}
 }
 
 # Creates a random string of characters for the fqdn
