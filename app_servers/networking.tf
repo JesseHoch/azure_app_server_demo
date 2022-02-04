@@ -37,5 +37,6 @@ resource "azurerm_public_ip" "guru-pubip" {
   resource_group_name = azurerm_resource_group.guru.name
   allocation_method   = "Static"
   domain_name_label   = random_string.guru-fqdn.result
+  sku                 = "Standard"
   tags                = var.tags
 }
