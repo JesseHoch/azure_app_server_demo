@@ -3,6 +3,7 @@ resource "azurerm_lb" "guru" {
   name                = "guru-lb"
   location            = azurerm_resource_group.guru.location
   resource_group_name = azurerm_resource_group.guru.name
+  sku                 = "Standard"
 
   frontend_ip_configuration {
     name                 = "publicIPAddress"
