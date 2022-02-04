@@ -57,11 +57,13 @@ variable "application_port" {
 variable "admin_username" {
   description = "Administrator username"
   type        = string
+  default     = "azureuser"
   sensitive   = true
 }
 
 variable "admin_password" {
   description = "Administrator password"
   type        = string
+  default     = "pW1234"
   sensitive   = true
 }
