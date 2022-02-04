@@ -1,8 +1,26 @@
 # Sets the variables for our configuration
-variable "location" {
+variable "rg_name" {
   description = "Value of the Resource Group Name"
   type        = string
-  default     = "<location>"
+  default     = "<RESOURCE_GROUP>"
+}
+
+variable "location" {
+  description = "Value of the Resource Group Location"
+  type        = string
+  default     = "<LOCATION>"
+}
+
+variable "storage_account_name" {
+  description = "Value of the Azure Storage Account Name"
+  type        = string
+  default     = "<storage_account_name>"
+}
+
+variable "container_name" {
+  description = "Value of the Azure Storage Container Name"
+  type        = string
+  default     = "<container_name>"
 }
 
 variable "tags" {
@@ -15,7 +33,7 @@ variable "tags" {
 }
 
 locals {
-  regions_with_availability_zones = ["<location>"] #["centralus","eastus2","eastus","westus"]
+  regions_with_availability_zones = ["<LOCATION>"] #["centralus","eastus2","eastus","westus"]
   zones = contains(local.regions_with_availability_zones, var.location) ? list("1","2","3") : null
 }
 
@@ -27,7 +45,7 @@ variable "azurerm_virtual_machine_scale_set" {
   
 variable "availability_zone_names" {
  description = "The name of the virtual network in which the resources will be created"
- default     = ["<location>"]
+ default     = ["<LOCATION>"]
  type    = list(string)
 }
 
@@ -37,13 +55,13 @@ variable "application_port" {
 }
 
 variable "admin_username" {
-  description = "Database administrator username"
+  description = "Administrator username"
   type        = string
   sensitive   = true
 }
 
 variable "admin_password" {
-  description = "Database administrator password"
+  description = "Administrator password"
   type        = string
   sensitive   = true
 }
