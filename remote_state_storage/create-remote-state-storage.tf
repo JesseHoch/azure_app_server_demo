@@ -20,6 +20,13 @@ resource "random_string" "resource_code" {
   upper   = false
 }
 
+# Imported Resource Group
+resource "azurerm_resource_group" "guru" {
+  #name     = "<RESOURCE_GROUP>"
+  #location = "<LOCATION>"
+  #tags     = "demo"
+}
+
 # Creates the Azure Storage Account
 resource "azurerm_storage_account" "tfstate" {
   name                     = "tfstate${random_string.resource_code.result}"
