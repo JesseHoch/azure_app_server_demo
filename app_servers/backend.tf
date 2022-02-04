@@ -1,9 +1,9 @@
 terraform {
   # Backend Remote State Storage in Azure Storage
   backend "azurerm" {
-    resource_group_name  = var.rg_name
-    storage_account_name = "<storage_account_name>"
-    container_name       = "tfstate"
+    resource_group_name  = "<RESOURCE_GROUP_NAME>"
+    storage_account_name = "<STORAGE_ACCOUNT_NAME>"
+    container_name       = "CONTAINER_NAME"
     key                  = "terraform.tfstate"
   }
 }
