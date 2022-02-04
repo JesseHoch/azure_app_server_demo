@@ -14,13 +14,13 @@ variable "location" {
 variable "storage_account_name" {
   description = "Value of the Azure Storage Account Name"
   type        = string
-  default     = "<storage_account_name>"
+  default     = "<STORAGE_ACCOUNT_NAME>"
 }
 
 variable "container_name" {
   description = "Value of the Azure Storage Container Name"
   type        = string
-  default     = "<container_name>"
+  default     = "<CONTAINER_NAME>"
 }
 
 variable "tags" {
